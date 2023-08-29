@@ -20,17 +20,21 @@ def sanitize(string: str) -> str:
 @app.get("/")
 def read_root() -> HTMLResponse:
     html: str = """
-     <html>
+    <html lang='en'>
         <head>
             <title>Tekken 8 API</title>
         </head>
-        <body>
+        <body style="padding: 25px 25px 25px 25px">
             <h1>Tekken 8 API</h1>
-            <p>Documentation can be found <a href="http://127.0.0.1:8000/docs">here</a></p>
+            <p>Documentation can be found <a href="http://127.0.0.1:8000/docs">here</a>.</p>
+            
+            <h2>Common Calls</h2>
+            <p>All character data: <a href="http://127.0.0.1:8000/character">/character</a>
+            <p>Specific character data: <a href="http://127.0.0.1:8000/character/bryan">/character/{name}</a>
         </body>
     </html>
     """
-    return HTMLResponse(html)
+    return HTMLResponse(content=html, status_code=200)
 
 
 @app.get("/character")
