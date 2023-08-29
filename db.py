@@ -2,17 +2,20 @@ from os import getenv
 
 import psycopg2
 from dotenv import load_dotenv
+from psycopg2 import extras
 
 load_dotenv()
 
-DATABASE: str = getenv("DATABASE")
-HOST: str = getenv("HOST")
-USERNAME: str = getenv("SUPABASE_USERNAME")
-PASSWORD: str = getenv("PASSWORD")
-PORT: str = getenv("PORT")
+db_config: dict[str, str] = {
+    "database": getenv("DATABASE"),
+    "host": getenv("HOST"),
+    "user": getenv("SUPABASE_USERNAME"),
+    "password": getenv("PASSWORD"),
+    "port": getenv("PORT"),
+}
 
-connection = psycopg2.connect(
-    database=DATABASE, host=HOST, user=USERNAME, password=PASSWORD, port=PORT
-)
+connection = psycopg2.connect(**db_config)
+db_cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-cursor = connection.cursor()
+if __name__ == "__main__":
+    pass
