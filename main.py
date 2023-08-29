@@ -2,10 +2,23 @@ import json
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from db import db_cursor
 
 app = FastAPI()
+
+origins = {
+    "http://localhost:5173"
+}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def sanitize(string: str) -> str:
