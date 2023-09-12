@@ -72,6 +72,7 @@
       <option name="ignoredErrors">
         <list>
           <option value="E203" />
+          <option value="W605" />
         </list>
       </option>
     </inspection_tool>
