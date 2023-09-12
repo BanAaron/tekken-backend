@@ -18,6 +18,7 @@ func getEnvVariables() (username string, password string, host string, port int,
 		panic(fmt.Errorf("unable to parse port to int: %s", err))
 	}
 	port = portInt
+
 	username = os.Getenv("DB_USERNAME")
 	password = os.Getenv("DB_PASSWORD")
 	host = os.Getenv("DB_HOST")
@@ -41,10 +42,8 @@ func main() {
 		}
 	}(db)
 
-	fmt.Println(connectionString)
-
 	characters := database.GetCharacters(db)
 	for _, character := range characters {
-		fmt.Println(character.Id, character.ShortName)
+		fmt.Println(character)
 	}
 }
