@@ -30,7 +30,10 @@ func main() {
 	const driver = "postgres"
 
 	connectionString := database.NewConnectionString(getEnvVariables())
-	db, _ := sql.Open(driver, connectionString.Get())
+	db, err := sql.Open(driver, connectionString.Get())
+	if err != nil {
+		panic(err)
+	}
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
