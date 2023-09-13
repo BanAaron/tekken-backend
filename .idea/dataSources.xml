@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="postgres@db.dkibntcbrdkqtezdxbco.supabase.co" uuid="33837488-fbb1-4016-a0d9-5deb2f97bb26">
+    <data-source source="LOCAL" name="Supabase Tekken" uuid="33837488-fbb1-4016-a0d9-5deb2f97bb26">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

@@ -42,6 +42,33 @@ type Character struct {
 	Gender        string
 }
 
+type CharacterMoves struct {
+	Character
+	Moves []Move
+}
+
+func NewCharacter(
+	id int,
+	shortName string,
+	longName string,
+	fightingStyle string,
+	nationality string,
+	height int,
+	weight int,
+	gender string,
+) Character {
+	return Character{
+		Id:            id,
+		ShortName:     shortName,
+		LongName:      longName,
+		FightingStyle: fightingStyle,
+		Nationality:   nationality,
+		Height:        height,
+		Weight:        weight,
+		Gender:        gender,
+	}
+}
+
 func (c Character) String() string {
 	var gender string
 	if c.Gender == "m" {
@@ -154,18 +181,42 @@ func GetCharacters(db *sql.DB) (characters []Character, err error) {
 		if err != nil {
 			return nil, err
 		}
-
-		characters = append(characters, Character{
-			Id:            id,
-			ShortName:     shortName,
-			LongName:      longName,
-			FightingStyle: fightingStyle,
-			Nationality:   nationality,
-			Height:        height,
-			Weight:        weight,
-			Gender:        gender,
-		})
-
+		newCharacter := NewCharacter(id, shortName, longName, fightingStyle, nationality, height, weight, gender)
+		// appends the character into characters using the NewCharacter factory
+		characters = append(characters, newCharacter)
 	}
 	return characters, nil
+}
+
+func GetCharacter(characterShortName string, db *sql.DB) (character *Character, err error) {
+	var (
+		id            int
+		shortName     string
+		longName      string
+		fightingStyle string
+		nationality   string
+		height        int
+		weight        int
+		gender        string
+	)
+	row := db.QueryRow(`select id, short_name, long_name, fighting_style,
+									 nationality, height, weight, gender
+							  from characters 
+							  where short_name = $1`, characterShortName)
+	err = row.Scan(
+		&id,
+		&shortName,
+		&longName,
+		&fightingStyle,
+		&nationality,
+		&height,
+		&weight,
+		&gender,
+	)
+	if err != nil {
+		return nil, err
+	}
+	newCharacter := NewCharacter(id, shortName, longName, fightingStyle, nationality, height, weight, gender)
+
+	return &newCharacter, nil
 }

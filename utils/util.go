@@ -6,12 +6,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func CheckError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func LoadDotEnv() {
 	err := godotenv.Load(".env")
 	if err != nil {

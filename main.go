@@ -28,11 +28,19 @@ func main() {
 	}(db)
 
 	characters, err := database.GetCharacters(db)
-	util.CheckError(err)
+	if err != nil {
+		panic(err)
+	}
 
 	for _, character := range characters {
 		fmt.Println(character)
 	}
+
+	jin, err := database.GetCharacter("Jin", db)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(jin)
 }
 
 func getEnvVariables() (username string, password string, host string, port int, dbname string) {
