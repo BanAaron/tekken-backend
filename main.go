@@ -11,21 +11,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func getEnvVariables() (username string, password string, host string, port int, dbname string) {
-	portString := os.Getenv("DB_PORT")
-	portInt, err := strconv.Atoi(portString)
-	if err != nil {
-		panic(fmt.Errorf("unable to parse port to int: %s", err))
-	}
-	port = portInt
-
-	username = os.Getenv("DB_USERNAME")
-	password = os.Getenv("DB_PASSWORD")
-	host = os.Getenv("DB_HOST")
-	dbname = os.Getenv("DB_DATABASE_NAME")
-	return username, password, host, port, dbname
-}
-
 func main() {
 	util.LoadDotEnv()
 	const driver = "postgres"
@@ -42,8 +27,25 @@ func main() {
 		}
 	}(db)
 
-	characters := database.GetCharacters(db)
+	characters, err := database.GetCharacters(db)
+	util.CheckError(err)
+
 	for _, character := range characters {
 		fmt.Println(character)
 	}
+}
+
+func getEnvVariables() (username string, password string, host string, port int, dbname string) {
+	portString := os.Getenv("DB_PORT")
+	portInt, err := strconv.Atoi(portString)
+	if err != nil {
+		panic(fmt.Errorf("unable to parse port to int: %s", err))
+	}
+	port = portInt
+
+	username = os.Getenv("DB_USERNAME")
+	password = os.Getenv("DB_PASSWORD")
+	host = os.Getenv("DB_HOST")
+	dbname = os.Getenv("DB_DATABASE_NAME")
+	return username, password, host, port, dbname
 }

@@ -1,14 +1,16 @@
 package database
 
+// https://go.dev/doc/tutorial/database-access
+
 import (
 	"database/sql"
 	"fmt"
 
-	util "aaronbarratt.dev/go/tekken-backend/utils"
 	_ "github.com/lib/pq"
 )
 
 type Move struct {
+	Id                  int
 	MoveName            string
 	InputCommand        string
 	StartupFrames       int
@@ -104,16 +106,30 @@ func NewConnectionString(
 	}
 }
 
-func GetCharacters(db *sql.DB) (characters []Character) {
-	res, err := db.Query("select id, short_name, long_name, fighting_style, nationality, height, weight, gender from characters")
-	util.CheckError(err)
+func GetCharacters(db *sql.DB) (characters []Character, err error) {
+	rows, err := db.Query(`
+	select id
+		 , short_name
+		 , long_name
+		 , fighting_style
+		 , nationality
+		 , height
+		 , weight
+		 , gender
+	from characters
+	order by id`)
+	if err != nil {
+		return nil, err
+	}
 
-	defer func(res *sql.Rows) {
-		err := res.Close()
-		util.CheckError(err)
-	}(res)
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			panic(fmt.Errorf("%s%", err))
+		}
+	}(rows)
 
-	for res.Next() {
+	for rows.Next() {
 		var (
 			id            int
 			shortName     string
@@ -125,7 +141,7 @@ func GetCharacters(db *sql.DB) (characters []Character) {
 			gender        string
 		)
 
-		err := res.Scan(
+		err := rows.Scan(
 			&id,
 			&shortName,
 			&longName,
@@ -135,7 +151,9 @@ func GetCharacters(db *sql.DB) (characters []Character) {
 			&weight,
 			&gender,
 		)
-		util.CheckError(err)
+		if err != nil {
+			return nil, err
+		}
 
 		characters = append(characters, Character{
 			Id:            id,
@@ -149,5 +167,5 @@ func GetCharacters(db *sql.DB) (characters []Character) {
 		})
 
 	}
-	return characters
+	return characters, nil
 }
