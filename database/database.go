@@ -9,7 +9,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func GetCharacters(db *sql.DB) (characters []Character, err error) {
+const driver = "postgres"
+
+func GetCharacters(connectionString ConnectionString) (characters []Character, err error) {
+	db, err := sql.Open(driver, connectionString.Get())
 	rows, err := db.Query(`
 		select id, short_name, long_name, fighting_style, nationality, height, weight, gender
 		from characters
@@ -48,7 +51,7 @@ func GetCharacters(db *sql.DB) (characters []Character, err error) {
 	return characters, nil
 }
 
-func GetCharacter(characterShortName string, db *sql.DB) (character *Character, err error) {
+func GetCharacter(characterShortName string, connectionString ConnectionString) (character *Character, err error) {
 	var (
 		id            int
 		shortName     string
@@ -59,6 +62,10 @@ func GetCharacter(characterShortName string, db *sql.DB) (character *Character, 
 		weight        int
 		gender        string
 	)
+	db, err := sql.Open(driver, connectionString.Get())
+	if err != nil {
+		return nil, err
+	}
 	row := db.QueryRow(`
 		select id, short_name, long_name, fighting_style, nationality, height, weight, gender
 		from characters 

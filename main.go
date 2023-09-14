@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"strconv"
@@ -13,30 +12,18 @@ import (
 
 func main() {
 	util.LoadDotEnv()
-	const driver = "postgres"
-
 	connectionString := database.NewConnectionString(getEnvVariables())
-	db, err := sql.Open(driver, connectionString.Get())
+
+	characters, err := database.GetCharacters(connectionString)
 	if err != nil {
-		panic(err)
-	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err)
+		fmt.Println("failed to get characters", err)
+	} else {
+		for _, character := range characters {
+			fmt.Println(character)
 		}
-	}(db)
-
-	characters, err := database.GetCharacters(db)
-	if err != nil {
-		panic(err)
 	}
 
-	for _, character := range characters {
-		fmt.Println(character)
-	}
-
-	jin, err := database.GetCharacter("Jin", db)
+	jin, err := database.GetCharacter("Jin", connectionString)
 	if err != nil {
 		panic(err)
 	}
