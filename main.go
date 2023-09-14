@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
+	"net/http"
 
 	"aaronbarratt.dev/go/tekken-backend/database"
 	util "aaronbarratt.dev/go/tekken-backend/utils"
@@ -12,35 +11,27 @@ import (
 
 func main() {
 	util.LoadDotEnv()
-	connectionString := database.NewConnectionString(getEnvVariables())
+	database.DbConnectionString = database.NewConnectionString(util.GetEnvVariables())
 
-	characters, err := database.GetCharacters(connectionString)
+	jin, err := database.GetCharacter("Jin", database.DbConnectionString)
 	if err != nil {
-		fmt.Println("failed to get characters", err)
+		fmt.Println(fmt.Errorf("%s", err))
 	} else {
-		for _, character := range characters {
-			fmt.Println(character)
-		}
+		fmt.Println(jin)
 	}
 
-	jin, err := database.GetCharacter("Jin", connectionString)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(jin)
-}
+	// check that the connection string is working with the database
+	err = database.CheckDatabaseConnection()
+	util.CheckError(err)
 
-func getEnvVariables() (username string, password string, host string, port int, dbname string) {
-	portString := os.Getenv("DB_PORT")
-	portInt, err := strconv.Atoi(portString)
-	if err != nil {
-		panic(fmt.Errorf("unable to parse port to int: %s", err))
-	}
-	port = portInt
+	// create the server
+	server := http.NewServeMux()
+	// create routes
+	server.Handle("/", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend", http.StatusSeeOther))
 
-	username = os.Getenv("DB_USERNAME")
-	password = os.Getenv("DB_PASSWORD")
-	host = os.Getenv("DB_HOST")
-	dbname = os.Getenv("DB_DATABASE_NAME")
-	return username, password, host, port, dbname
+	server.HandleFunc("/teapot", util.HandleTeapot)
+	server.HandleFunc("/api/characters", database.GetCharacters)
+	// start the server
+	err = http.ListenAndServe(":8888", server)
+	util.CheckError(err)
 }

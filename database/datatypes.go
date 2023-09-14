@@ -93,6 +93,15 @@ type ConnectionString struct {
 	dbname   string
 }
 
+func (cs ConnectionString) Get() string {
+	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
+		cs.username,
+		cs.password,
+		cs.host,
+		cs.port,
+		cs.dbname)
+}
+
 func (cs ConnectionString) String() string {
 	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
 		cs.username,
@@ -101,15 +110,6 @@ func (cs ConnectionString) String() string {
 		cs.port,
 		"[DBNAME]",
 	)
-}
-
-func (cs ConnectionString) Get() string {
-	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
-		cs.username,
-		cs.password,
-		cs.host,
-		cs.port,
-		cs.dbname)
 }
 
 func NewConnectionString(username string, password string, host string, port int, dbname string) ConnectionString {
