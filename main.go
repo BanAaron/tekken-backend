@@ -28,7 +28,6 @@ func main() {
 	server := http.NewServeMux()
 	// create routes
 	server.Handle("/", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend", http.StatusSeeOther))
-
 	server.HandleFunc("/teapot", util.HandleTeapot)
 	server.HandleFunc("/api/characters", database.GetCharacters)
 	// start the server
