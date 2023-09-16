@@ -10,18 +10,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// CheckError checks if there is an error. If there is it will panic
+// CheckError checks if there is an error. If there is it will throw a fatal error
 func CheckError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func LoadDotEnv() {
+func LoadDotEnv() error {
 	err := godotenv.Load(".env")
 	if err != nil {
-		panic(fmt.Errorf("unable to load .env: %s", err))
+		return fmt.Errorf("unable to load .env: %s", err)
 	}
+	return nil
 }
 
 func GetEnvVariables() (username string, password string, host string, port int, dbname string) {
