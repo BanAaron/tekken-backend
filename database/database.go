@@ -45,7 +45,6 @@ func GetCharacters(name string) (characters []Character, err error) {
 		return nil, err
 	}
 
-	fmt.Println(name)
 	if name == "" {
 		query = `
 			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
