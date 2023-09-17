@@ -4,10 +4,9 @@ package database
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"net/http"
 
+	util "aaronbarratt.dev/go/tekken-backend/utils"
 	_ "github.com/lib/pq"
 )
 
@@ -16,11 +15,18 @@ const driver = "postgres"
 var DbConnectionString ConnectionString
 
 // CheckDatabaseConnection connects to and pings the server to make sure the connection is working
-func CheckDatabaseConnection() error {
+func CheckDatabaseConnection() (err error) {
 	db, err := sql.Open(driver, DbConnectionString.Get())
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			fmt.Println(fmt.Errorf("failed to close database connection"), err)
+		}
+	}()
 	if err != nil {
 		return err
 	}
+
 	err = db.Ping()
 	if err != nil {
 		return err
@@ -28,19 +34,35 @@ func CheckDatabaseConnection() error {
 	return nil
 }
 
-func GetCharacters(writer http.ResponseWriter, _ *http.Request) {
+// GetCharacters requests all the characters from the database
+func GetCharacters(name string) (characters []Character, err error) {
+	var query string
+	var rows *sql.Rows
+	util.ToTitleCase(&name)
+
 	db, err := sql.Open(driver, DbConnectionString.Get())
 	if err != nil {
-		http.Error(writer, "Unable to connect to database", http.StatusInternalServerError)
+		return nil, err
 	}
-	var characters []Character
-	rows, err := db.Query(`
-		select id, short_name, long_name, fighting_style, nationality, height, weight, gender
-		from characters
-		order by id
-	`)
+
+	fmt.Println(name)
+	if name == "" {
+		query = `
+			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
+			from characters
+			order by id
+		`
+		rows, err = db.Query(query)
+	} else {
+		query = `
+			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
+			from characters
+			where short_name = $1
+		`
+		rows, err = db.Query(query, name)
+	}
 	if err != nil {
-		http.Error(writer, "Failed to query database", http.StatusInternalServerError)
+		return nil, err
 	}
 
 	defer func() {
@@ -64,50 +86,13 @@ func GetCharacters(writer http.ResponseWriter, _ *http.Request) {
 
 		err := rows.Scan(&id, &shortName, &longName, &fightingStyle, &nationality, &height, &weight, &gender)
 		if err != nil {
-			http.Error(writer, "Failed to read data from rows", http.StatusInternalServerError)
+			return nil, err
 		}
 		newCharacter := NewCharacter(id, shortName, longName, fightingStyle, nationality, height, weight, gender)
 		characters = append(characters, newCharacter)
 	}
-	err = json.NewEncoder(writer).Encode(characters)
-	if err != nil {
-		http.Error(writer, "Failed to read data from rows", http.StatusInternalServerError)
-	}
-}
-
-func GetCharacter(characterShortName string, connectionString ConnectionString) (character *Character, err error) {
-	var (
-		id            int
-		shortName     string
-		longName      string
-		fightingStyle string
-		nationality   string
-		height        int
-		weight        int
-		gender        string
-	)
-	db, err := sql.Open(driver, connectionString.Get())
 	if err != nil {
 		return nil, err
 	}
-	row := db.QueryRow(`
-		select id, short_name, long_name, fighting_style, nationality, height, weight, gender
-		from characters 
-		where short_name = $1`, characterShortName)
-	err = row.Scan(
-		&id,
-		&shortName,
-		&longName,
-		&fightingStyle,
-		&nationality,
-		&height,
-		&weight,
-		&gender,
-	)
-	if err != nil {
-		return nil, err
-	}
-	newCharacter := NewCharacter(id, shortName, longName, fightingStyle, nationality, height, weight, gender)
-
-	return &newCharacter, nil
+	return characters, nil
 }
