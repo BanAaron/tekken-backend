@@ -2,6 +2,8 @@ package database
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 )
 
 type Character struct {
@@ -93,6 +95,15 @@ type ConnectionString struct {
 	dbname   string
 }
 
+func NewConnectionString() (cs ConnectionString, err error) {
+	cs.username = os.Getenv("DB_USERNAME")
+	cs.password = os.Getenv("DB_PASSWORD")
+	cs.host = os.Getenv("DB_HOST")
+	cs.port, err = strconv.Atoi(os.Getenv("DB_PORT"))
+	cs.dbname = os.Getenv("DB_DATABASE_NAME")
+	return
+}
+
 func (cs ConnectionString) Get() string {
 	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
 		cs.username,
@@ -100,24 +111,4 @@ func (cs ConnectionString) Get() string {
 		cs.host,
 		cs.port,
 		cs.dbname)
-}
-
-func (cs ConnectionString) String() string {
-	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
-		cs.username,
-		"[PASSWORD]",
-		cs.host,
-		cs.port,
-		"[DBNAME]",
-	)
-}
-
-func NewConnectionString(username string, password string, host string, port int, dbname string) ConnectionString {
-	return ConnectionString{
-		username: username,
-		password: password,
-		host:     host,
-		port:     port,
-		dbname:   dbname,
-	}
 }

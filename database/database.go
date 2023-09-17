@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	util "aaronbarratt.dev/go/tekken-backend/utils"
+	"aaronbarratt.dev/go/tekken-backend/utils"
 	_ "github.com/lib/pq"
 )
 

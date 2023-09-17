@@ -16,20 +16,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	database.DbConnectionString = database.NewConnectionString(util.GetEnvVariables())
 
+	database.DbConnectionString, err = database.NewConnectionString()
+	if err != nil {
+		log.Fatal(err)
+	}
 	// check that the connection string is working with the database
 	err = database.CheckDatabaseConnection()
-	util.CheckError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("Database connection success!")
 
-	// create the server
 	server := http.NewServeMux()
-	// create routes
 	server.Handle("/api/help", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend#tekken-backend", http.StatusSeeOther))
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
-	// start the server
 	err = http.ListenAndServe(":8888", server)
-	util.CheckError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
