@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	util "aaronbarratt.dev/go/tekken-backend/utils"
 	_ "github.com/lib/pq"
 )
 
@@ -14,11 +15,18 @@ const driver = "postgres"
 var DbConnectionString ConnectionString
 
 // CheckDatabaseConnection connects to and pings the server to make sure the connection is working
-func CheckDatabaseConnection() error {
+func CheckDatabaseConnection() (err error) {
 	db, err := sql.Open(driver, DbConnectionString.Get())
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			fmt.Println(fmt.Errorf("failed to close database connection"), err)
+		}
+	}()
 	if err != nil {
 		return err
 	}
+
 	err = db.Ping()
 	if err != nil {
 		return err
@@ -27,17 +35,32 @@ func CheckDatabaseConnection() error {
 }
 
 // GetCharacters requests all the characters from the database
-func GetCharacters() ([]Character, error) {
+func GetCharacters(name string) (characters []Character, err error) {
+	var query string
+	var rows *sql.Rows
+	util.ToTitleCase(&name)
+
 	db, err := sql.Open(driver, DbConnectionString.Get())
 	if err != nil {
 		return nil, err
 	}
-	var characters []Character
-	rows, err := db.Query(`
-		select id, short_name, long_name, fighting_style, nationality, height, weight, gender
-		from characters
-		order by id
-	`)
+
+	fmt.Println(name)
+	if name == "" {
+		query = `
+			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
+			from characters
+			order by id
+		`
+		rows, err = db.Query(query)
+	} else {
+		query = `
+			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
+			from characters
+			where short_name = $1
+		`
+		rows, err = db.Query(query, name)
+	}
 	if err != nil {
 		return nil, err
 	}

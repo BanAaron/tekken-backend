@@ -3,11 +3,12 @@ package util
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // CheckError checks if there is an error. If there is it will throw a fatal error
@@ -40,11 +41,7 @@ func GetEnvVariables() (username string, password string, host string, port int,
 	return username, password, host, port, dbname
 }
 
-func HandleTeapot(writer http.ResponseWriter, _ *http.Request) {
-	writer.WriteHeader(http.StatusTeapot)
-	_, err := writer.Write([]byte("I am a teapot"))
-	if err != nil {
-		// Handle the error here
-		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
-	}
+func ToTitleCase(str *string) {
+	titleCase := cases.Title(language.English)
+	*str = titleCase.String(*str)
 }
