@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"aaronbarratt.dev/go/tekken-backend/database"
@@ -25,8 +26,12 @@ func HandleCharacter(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 	}
 	if len(characters) == 0 {
-		writer.Header().Set("Error", "Character does not exist")
-		http.Error(writer, "Error", http.StatusUnprocessableEntity)
+		writer.Header().Set("Error", "Character does not exist.")
+		http.Error(
+			writer,
+			fmt.Sprintf("error. Character %s does not exist", name),
+			http.StatusUnprocessableEntity,
+		)
 	} else {
 		// encodes the characters array of structs into json and writes it to writer
 		err = json.NewEncoder(writer).Encode(characters)

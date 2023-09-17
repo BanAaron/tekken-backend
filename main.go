@@ -26,9 +26,9 @@ func main() {
 	// create the server
 	server := http.NewServeMux()
 	// create routes
-	server.Handle("/", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend", http.StatusSeeOther))
-	server.HandleFunc("/teapot", handlers.HandleTeapot)
+	server.Handle("/api/help", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend#tekken-backend", http.StatusSeeOther))
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
+	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	// start the server
 	err = http.ListenAndServe(":8888", server)
 	util.CheckError(err)
