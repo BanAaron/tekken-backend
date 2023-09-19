@@ -31,6 +31,7 @@ func main() {
 	server := http.NewServeMux()
 	server.Handle("/api/help", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend#tekken-backend", http.StatusSeeOther))
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
+	server.HandleFunc("/api/characterWithId", handlers.HandleCharacterWithId)
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	err = http.ListenAndServe(":8888", server)
 	if err != nil {

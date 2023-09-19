@@ -34,6 +34,44 @@ func CheckDatabaseConnection() (err error) {
 	return nil
 }
 
+func GetCharactersWithId() (characterWithIds []CharacterWithId, err error) {
+	var rows *sql.Rows
+
+	db, err := sql.Open(driver, DbConnectionString.Get())
+	if err != nil {
+		return
+	}
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			println(fmt.Errorf("failed to close databse connection: %s", err))
+		}
+	}()
+
+	rows, err = db.Query(`select id, short_name from characters`)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var (
+			id        int
+			shortName string
+		)
+
+		err := rows.Scan(&id, &shortName)
+		if err != nil {
+			fmt.Println(err)
+		}
+		characterWithIds = append(characterWithIds, CharacterWithId{
+			Id:        id,
+			ShortName: shortName,
+		})
+	}
+
+	return
+}
+
 // GetCharacters requests all the characters from the database
 func GetCharacters(name string) (characters []Character, err error) {
 	var query string

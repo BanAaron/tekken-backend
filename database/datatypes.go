@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+type CharacterWithId struct {
+	Id        int
+	ShortName string
+}
+
 type Character struct {
 	Id            int
 	ShortName     string

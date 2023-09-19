@@ -42,6 +42,24 @@ func HandleCharacter(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func HandleCharacterWithId(writer http.ResponseWriter, _ *http.Request) {
+	var (
+		characterWithIds []database.CharacterWithId
+		err              error
+	)
+
+	characterWithIds, err = database.GetCharactersWithId()
+	if err != nil {
+		writer.Header().Set("Error", err.Error())
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+	}
+	err = json.NewEncoder(writer).Encode(characterWithIds)
+	if err != nil {
+		writer.Header().Set("Error", err.Error())
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func HandleTeapot(writer http.ResponseWriter, _ *http.Request) {
 	writer.WriteHeader(http.StatusTeapot)
 	_, err := writer.Write([]byte("I am a teapot"))
