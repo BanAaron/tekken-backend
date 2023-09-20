@@ -48,7 +48,7 @@ func GetCharactersWithId() (characterWithIds []CharacterWithId, err error) {
 		}
 	}()
 
-	rows, err = db.Query(`select id, short_name from characters`)
+	rows, err = db.Query("select id, short_name from characters order by short_name")
 	if err != nil {
 		return
 	}

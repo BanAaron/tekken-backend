@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	handlers.FrontendHost = "http://localhost:5173"
 	// check that the connection string is working with the database
 	err = database.CheckDatabaseConnection()
 	if err != nil {
