@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"aaronbarratt.dev/go/tekken-backend/database"
-	"aaronbarratt.dev/go/tekken-backend/handlers"
-	"aaronbarratt.dev/go/tekken-backend/utils"
+	"github.com/banaaron/tekken-backend/database"
+	"github.com/banaaron/tekken-backend/handlers"
+	"github.com/banaaron/tekken-backend/utils"
 )
 
 func main() {

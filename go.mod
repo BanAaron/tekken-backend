@@ -1,4 +1,4 @@
-module aaronbarratt.dev/go/tekken-backend
+module github.com/banaaron/tekken-backend
 
 go 1.21.1
 

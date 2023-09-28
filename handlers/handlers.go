@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"aaronbarratt.dev/go/tekken-backend/database"
+	"github.com/banaaron/tekken-backend/database"
 )
 
 var FrontendHost string
