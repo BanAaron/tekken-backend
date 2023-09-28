@@ -5,7 +5,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-
 	"github.com/banaaron/tekken-backend/utils"
 	_ "github.com/lib/pq"
 )
@@ -83,14 +82,14 @@ func GetCharacters(name string) (characters []Character, err error) {
 		return nil, err
 	}
 
-	if name == "" {
+	switch name {
+	case "":
 		query = `
 			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
 			from characters
-			order by id
-		`
+			order by id`
 		rows, err = db.Query(query)
-	} else {
+	default:
 		query = `
 			select id, short_name, long_name, fighting_style, nationality, height, weight, gender
 			from characters
