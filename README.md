@@ -29,6 +29,7 @@ This is an API which allows you to request Tekken 8 character and move data.
     "Gender": "f"
   },
   ...
+]
 ```
 
 ✅ `/api/character?=bryan` returns data for the specified character.
