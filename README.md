@@ -1,4 +1,5 @@
 # Tekken Backend
+
 This is an API which allows you to request Tekken 8 character and move data.
 
 ## Implemented:
@@ -6,6 +7,7 @@ This is an API which allows you to request Tekken 8 character and move data.
 ✅ `/api/help` directs to the help page.
 
 ✅ `/api/characters` returns data for all characters.
+
 ```json
 [
   {
@@ -28,10 +30,16 @@ This is an API which allows you to request Tekken 8 character and move data.
     "Weight": 57,
     "Gender": "f"
   },
-  ...
+  {
+    "etc": "etc"
+  }
+]
 ```
 
-✅ `/api/character?=bryan` returns data for the specified character.
+## To Do:
+
+❌ `/api/character?=bryan` returns data for the specified character.
+
 ```json
 [
   {
@@ -46,8 +54,6 @@ This is an API which allows you to request Tekken 8 character and move data.
   }
 ]
 ```
-
-## To Do:
 
 ❌ `/api/movelist` returns moves for all characters.
 

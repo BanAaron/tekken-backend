@@ -2,6 +2,7 @@ package database
 
 import "fmt"
 
+// ConnectionString contains the parameters needed to make a database connection
 type ConnectionString struct {
 	username     string
 	password     string
@@ -10,6 +11,7 @@ type ConnectionString struct {
 	databaseName string
 }
 
+// NewConnectionString creates a connection string ensuring you supply all the required parameters
 func NewConnectionString(
 	username string,
 	password string,
@@ -22,6 +24,7 @@ func NewConnectionString(
 	}
 }
 
+// String returns the connection string formatted correctly to make a database connection
 func (cs ConnectionString) String() string {
 	return fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s",
 		cs.username,
@@ -31,6 +34,7 @@ func (cs ConnectionString) String() string {
 		cs.databaseName)
 }
 
+// Get returns the connection string in the correct format to make a database connection
 func (cs ConnectionString) Get() string {
 	return cs.String()
 }

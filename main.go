@@ -4,73 +4,35 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/banaaron/tekken-backend/database"
-	"github.com/joho/godotenv"
+	"github.com/banaaron/tekken-backend/handlers"
 	_ "github.com/lib/pq"
 	"log"
-	"os"
-	"strconv"
+	"net/http"
 )
 
-func getEnvironmentVariables() (username string, password string, host string, dbName string, port int, err error) {
-	err = godotenv.Load(".env")
-	if err != nil {
-		return
-	}
-	username = os.Getenv("DB_USERNAME")
-	password = os.Getenv("DB_PASSWORD")
-	host = os.Getenv("DB_HOST")
-	dbName = os.Getenv("DB_DATABASE_NAME")
-	port, err = strconv.Atoi(os.Getenv("DB_PORT"))
-	if err != nil {
-		return
-	}
-	return
+func init() {
+	// initialize the database connection
+	database.InitDb()
+	fmt.Println("http://localhost:8888/api/character")
 }
 
 func main() {
-	// load .env
-	const driver = "postgres"
-	username, password, host, dbName, port, err := getEnvironmentVariables()
-	if err != nil {
-		log.Fatal(err)
-	}
-	// connect to database
-	// 1. make connection string
-	connectionString := database.NewConnectionString(username, password, host, port, dbName).Get()
-	// 2. connect to database
-	db, err := sql.Open(driver, connectionString)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// 3. defer close
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
-	// 4. ping db to make sure connection was successful
-	err = db.Ping()
-	if err != nil {
-		message := fmt.Sprintf("db.ping: %s", err)
-		fmt.Println(message)
-	}
-	// 5. query
-	rows, err := db.Query("select id, short_name from characters")
+	var err error
+	githubURL := "https://github.com/aarontbarratt/tekken-backend#tekken-backend"
+
+	server := http.NewServeMux()
+	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
+	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
+	server.HandleFunc("/api/character", handlers.HandleCharacter)
+	err = http.ListenAndServe(":8888", server)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for rows.Next() {
-		var (
-			id        int
-			shortName string
-		)
-		err := rows.Scan(&id, &shortName)
+	defer func(Db *sql.DB) {
+		err := Db.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-		result := fmt.Sprintf("%d %s", id, shortName)
-		fmt.Println(result)
-	}
+	}(database.Db)
 }
