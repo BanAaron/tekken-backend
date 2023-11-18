@@ -1,7 +1,7 @@
 package database
 
 func GetCharacters() (characters []Character, err error) {
-	rows, err := Db.Query("select id, short_name, long_name, fighting_style, nationality, height, weight, gender from characters")
+	rows, err := Db.Query("select id, short_name, long_name, fighting_style, nationality, height, weight, gender from characters order by short_name")
 	if err != nil {
 		return
 	}
