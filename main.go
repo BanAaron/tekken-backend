@@ -1,41 +1,38 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/banaaron/tekken-backend/database"
 	"github.com/banaaron/tekken-backend/handlers"
-	"github.com/banaaron/tekken-backend/utils"
+	_ "github.com/lib/pq"
+	"log"
+	"net/http"
 )
+
+func init() {
+	// initialize the database connection
+	database.InitDb()
+	fmt.Println("http://localhost:8888/api/character")
+}
 
 func main() {
 	var err error
-	err = util.LoadDotEnv()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	database.DbConnectionString, err = database.NewConnectionString()
-	if err != nil {
-		log.Fatal(err)
-	}
-	handlers.FrontendHost = "http://localhost:5173"
-	// check that the connection string is working with the database
-	err = database.CheckDatabaseConnection()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Database connection success!")
+	githubURL := "https://github.com/aarontbarratt/tekken-backend#tekken-backend"
 
 	server := http.NewServeMux()
-	server.Handle("/api/help", http.RedirectHandler("https://github.com/aarontbarratt/tekken-backend#tekken-backend", http.StatusSeeOther))
-	server.HandleFunc("/api/character", handlers.HandleCharacter)
-	server.HandleFunc("/api/characterWithId", handlers.HandleCharacterWithId)
+	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
+	server.HandleFunc("/api/character", handlers.HandleCharacter)
 	err = http.ListenAndServe(":8888", server)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer func(Db *sql.DB) {
+		err := Db.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(database.Db)
 }
