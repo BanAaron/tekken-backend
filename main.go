@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
+	"os"
 )
 
 func init() {
@@ -20,11 +21,13 @@ func main() {
 	var err error
 	githubURL := "https://github.com/aarontbarratt/tekken-backend#tekken-backend"
 
+	port := os.Getenv("PORT")
+
 	server := http.NewServeMux()
 	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
-	err = http.ListenAndServe(":8888", server)
+	err = http.ListenAndServe(port, server)
 	if err != nil {
 		log.Fatal(err)
 	}
