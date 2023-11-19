@@ -12,3 +12,13 @@ func HandleTeapot(writer http.ResponseWriter, _ *http.Request) {
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
+func HandleRoot(writer http.ResponseWriter, _ *http.Request) {
+	EnableCors(&writer)
+
+	writer.WriteHeader(http.StatusOK)
+	_, err := writer.Write([]byte("Hello, World"))
+	if err != nil {
+		// Handle the error here
+		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+	}
+}

@@ -24,6 +24,8 @@ func main() {
 	port := os.Getenv("PORT")
 
 	server := http.NewServeMux()
+
+	server.HandleFunc("/", handlers.HandleRoot)
 	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
