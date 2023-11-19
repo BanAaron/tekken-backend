@@ -27,7 +27,9 @@ func main() {
 	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
-	err = http.ListenAndServe(port, server)
+	fmt.Println(port)
+	fmt.Println(":" + port)
+	err = http.ListenAndServe(":"+port, server)
 	if err != nil {
 		log.Fatal(err)
 	}
