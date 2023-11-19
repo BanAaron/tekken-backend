@@ -12,25 +12,23 @@ import (
 )
 
 func init() {
-	// initialize the database connection
-	database.InitDb()
-	fmt.Println("http://localhost:8888/api/character")
+	err := database.InitDb()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
 	var err error
 	githubURL := "https://github.com/aarontbarratt/tekken-backend#tekken-backend"
-
 	port := os.Getenv("PORT")
+	fmt.Printf("http://localhost:%s\n", port)
 
 	server := http.NewServeMux()
-
 	server.HandleFunc("/", handlers.HandleRoot)
 	server.Handle("/api/help", http.RedirectHandler(githubURL, http.StatusSeeOther))
 	server.HandleFunc("/api/teapot", handlers.HandleTeapot)
 	server.HandleFunc("/api/character", handlers.HandleCharacter)
-	fmt.Println(port)
-	fmt.Println(":" + port)
 	err = http.ListenAndServe(":"+port, server)
 	if err != nil {
 		log.Fatal(err)

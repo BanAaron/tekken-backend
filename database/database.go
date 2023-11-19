@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"github.com/joho/godotenv"
 	"os"
 	"strconv"
 
@@ -15,10 +15,17 @@ var Db *sql.DB
 const driver = "postgres"
 
 func getEnvironmentVariables() (username string, password string, host string, dbName string, port int, err error) {
-	//err = godotenv.Load(".env")
-	//if err != nil {
-	//	return
-	//}
+	hostname, err := os.Hostname()
+	if err != nil {
+		return
+	}
+	if hostname == "aaron" {
+		err = godotenv.Load(".env")
+		if err != nil {
+			return
+		}
+	}
+
 	username = os.Getenv("DB_USERNAME")
 	password = os.Getenv("DB_PASSWORD")
 	host = os.Getenv("DB_HOST")
@@ -30,23 +37,24 @@ func getEnvironmentVariables() (username string, password string, host string, d
 	return
 }
 
-func InitDb() {
-	var err error
-
+func InitDb() (err error) {
 	username, password, host, dbName, port, err := getEnvironmentVariables()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	connectionString := NewConnectionString(username, password, host, port, dbName).Get()
 	Db, err = sql.Open(driver, connectionString)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
+	fmt.Println("db connection successful")
 
 	err = Db.Ping()
 	if err != nil {
-		message := fmt.Sprintf("Db.ping: %s", err)
-		fmt.Println(message)
+		message := fmt.Errorf("db.ping: %s", err)
+		return message
 	}
+	fmt.Println("database ping successful")
+	return nil
 }
