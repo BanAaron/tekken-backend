@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/banaaron/tekken-backend/database"
 	"github.com/banaaron/tekken-backend/handlers"
 	_ "github.com/lib/pq"
@@ -22,7 +21,6 @@ func main() {
 	var err error
 	githubURL := "https://github.com/aarontbarratt/tekken-backend#tekken-backend"
 	port := os.Getenv("PORT")
-	fmt.Printf("http://localhost:%s\n", port)
 
 	server := http.NewServeMux()
 	server.HandleFunc("/", handlers.HandleRoot)
