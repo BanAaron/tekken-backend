@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/joho/godotenv"
 	"os"
@@ -15,15 +16,9 @@ var Db *sql.DB
 const driver = "postgres"
 
 func getEnvironmentVariables() (username string, password string, host string, dbName string, port int, err error) {
-	hostname, err := os.Hostname()
-	if err != nil {
+	err = godotenv.Load(".env")
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return
-	}
-	if hostname == "aaron" {
-		err = godotenv.Load(".env")
-		if err != nil {
-			return
-		}
 	}
 
 	username = os.Getenv("DB_USERNAME")
